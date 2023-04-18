@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "mysql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+model User {
+  id         String   @id @default(uuid())
+  email      String   @unique
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  favorited  Teapot[] @relation(name: "favorited_teapots")
+  teapots    Teapot[] @relation(name: "created_teapots")
+}
+
+enum ServerType {
+  Asia
+  America
+  Europe
+  SAR
+}
+
+enum RealmLayoutType {
+  FloatingAbode
+  EmeraldPeak
+  CoolIsle
+  SilkenCourtyard
+  SublimeSpicewood
+}
+
+model Teapot {
+  id              String          @id @default(uuid())
+  name            String
+  server          ServerType
+  layout          RealmLayoutType
+  description     String
+  image_urls      ImageUrl[]
+  items           Item[]
+  creator         User            @relation(name: "created_teapots", fields: [creator_id], references: [id])
+  creator_id      String
+  favorited_by    User?           @relation(name: "favorited_teapots", fields: [favorited_by_id], references: [id])
+  favorited_by_id String?
+  replica_code    String          @unique
+
+  @@index([creator_id])
+  @@index([favorited_by_id])
+}
+
+model Item {
+  id         Int      @id @default(autoincrement())
+  name       String   @unique
+  thumbnail  String
+  event      Boolean  @default(false)
+  teapots    Teapot[]
+}
+
+model ImageUrl {
+  id         String   @id @default(uuid())
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  url        String
+  teapot_id  String
+  teapot     Teapot   @relation(fields: [teapot_id], references: [id])
+
+  @@index([teapot_id])
+}
