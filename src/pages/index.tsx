@@ -1,9 +1,26 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
+import Image from "next/image";
+import { Inter, Dosis } from "next/font/google";
+import { useSession, signOut } from "next-auth/react";
+import { useRouter } from "next/router";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
+const dosis = Dosis({ subsets: ["latin"] });
 
 export default function Home() {
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  if (status === 'loading') return <h1> loading... please wait</h1>;
+  if (status === "unauthenticated") {
+    return (
+      <>
+        Not signed in <br />
+        <button onClick={() => router.push("/login")}>Sign in</button>
+      </>
+    );
+
+  }
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
@@ -11,6 +28,10 @@ export default function Home() {
           Get started by editing&nbsp;
           <code className="font-mono font-bold">src/pages/index.tsx</code>
         </p>
+        <div>
+          Signed in as {session?.user!.email} <br />
+          <button onClick={() => signOut()}>Sign out</button>
+        </div>
         <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
           <a
             className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
@@ -18,7 +39,7 @@ export default function Home() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            By{' '}
+            By{" "}
             <Image
               src="/vercel.svg"
               alt="Vercel Logo"
@@ -50,7 +71,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <h2 className={`${inter.className} mb-3 text-2xl font-semibold`}>
-            Docs{' '}
+            Docs{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
@@ -69,7 +90,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <h2 className={`${inter.className} mb-3 text-2xl font-semibold`}>
-            Learn{' '}
+            Learn{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
@@ -88,7 +109,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <h2 className={`${inter.className} mb-3 text-2xl font-semibold`}>
-            Templates{' '}
+            Templates{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
@@ -107,7 +128,7 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <h2 className={`${inter.className} mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
+            Deploy{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
             </span>
@@ -120,5 +141,5 @@ export default function Home() {
         </a>
       </div>
     </main>
-  )
+  );
 }
